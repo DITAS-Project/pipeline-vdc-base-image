@@ -1,0 +1,5 @@
+# TODO - a dockerfile with the dependecies nedeed for that all the components that will be run inside
+# How to inject in the image the compiled componentes? Two or maybe options
+# 1.- For each component, use COPY to copy the code from the repo to the image and compile and build in this Dockerfile
+# 2.- Compile and build (again) in the "stage ('Image generation')" and the COPY the resultant artifact here
+# 3.- If the "stage ('Build - Test')" has already generated some artifacts, they can be COPYed directly inside the image
