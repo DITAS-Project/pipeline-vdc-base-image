@@ -67,15 +67,12 @@ pipeline {
                     //build the base image somehow?
                     //build the test enviroment
                     agent {
-                        // We MUST build and test inside a container with all dependencies
                         dockerfile {
-                            // A image from DockerHub can be used instead a Dockerfile
                             filename 'Dockerfile.vdc-request.build'
                         }
                     }
                     steps {
-                        echo "TO-DO"
-                        //sh test.sh
+                        sh test.sh
                     }
                 }
                 

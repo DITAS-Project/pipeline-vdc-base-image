@@ -1,5 +1,35 @@
-# TODO - a dockerfile with the dependecies nedeed for that all the components that will be run inside
-# How to inject in the image the compiled componentes? Two or maybe options
-# 1.- For each component, use COPY to copy the code from the repo to the image and compile and build in this Dockerfile
-# 2.- Compile and build (again) in the "stage ('Image generation')" and the COPY the resultant artifact here
-# 3.- If the "stage ('Build - Test')" has already generated some artifacts, they can be COPYed directly inside the image
+FROM golang:1.10.0-alpine as vdcAgent
+RUN apk update && apk add git && \
+    go get -u github.com/golang/dep/cmd/dep && \
+    go get github.com/DITAS-Project/VDC-Logging-Agent && \
+    cd src/github.com/DITAS-Project/VDC-Logging-Agent && \
+    dep ensure && \
+    CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o vdc-agent
+
+FROM maven:3-jdk-8 AS vdcThroughput
+RUN git clone https://github.com/DITAS-Project/VDC-Throughput-Agent.git && \
+    cd VDC-Throughput-Agent && \
+    mvn package 
+
+FROM ditas/vdc-request-monitor:latest
+
+# Add compiled vdc-monitoring components
+COPY --from=vdcAgent /go/src/github.com/DITAS-Project/VDC-Logging-Agent/vdc-agent /opt/monitoring/vdc-agent
+COPY --from=vdcThroughput /VDC-Throughput-Agent/target/VDCMonitor-1.0-SNAPSHOT.jar /opt/monitoring/VDCMonitor.jar
+
+RUN mkdir /opt/monitoring/mnt && touch /opt/monitoring/mnt/whitelist
+# add nassesary command line tools
+RUN apt-get update \
+    && apt-get install -y iptraf-ng \
+    && rm -rf /var/lib/apt/lists/*
+
+#TODO how do we do service discovery?
+ENV elasticURI 127.0.0.1
+ENV zipkinURI 127.0.0.1:9411
+ENV vdcURI 127.0.0.1:8080
+ENV VDC_ADDRESS 127.0.0.1
+EBV VDC_PORT 8080
+
+ADD entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
