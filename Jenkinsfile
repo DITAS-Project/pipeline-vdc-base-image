@@ -37,29 +37,24 @@ pipeline {
             parallel {
                 stage('Build - test vdc-logging') {
                     agent {
-                        dockerfile {
-                            filename 'golang:1.10.1'
-                        }
+                        image 'golang:1.10.1'
                     }
                     steps {
                         dir('vdc-logging') {
-                           go get -u 'github.com/golang/dep/cmd/dep'
-                           dep ensure
-                           go test ./...
+                           sh "go get -u 'github.com/golang/dep/cmd/dep'"
+                           sh "dep ensure"
+                           sh "go test ./..."
                         }
                     }
                 }
                 stage('Checkout vdc-throughput') {
                     agent {
-                        dockerfile {
-                            filename 'maven:3-jdk-8'
-                        }
+                        image 'maven:3-jdk-8'
                     }
                     steps {
-                        apt-get update
-                        apt-get install -y iptraf-ng
+                        sh "apt-get update && apt-get install -y iptraf-ng"
                         dir('vdc-throughput') {
-                            mvm test
+                            sh "mvm test"
                         }
                     }
                 }
