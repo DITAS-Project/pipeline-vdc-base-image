@@ -37,20 +37,35 @@ pipeline {
             parallel {
                 stage('Build - test vdc-logging') {
                     agent {
-                        // We MUST build and test inside a container with all dependencies
                         dockerfile {
-                            // A image from DockerHub can be used instead a Dockerfile
-                            filename 'Dockerfile.vdc-logging.build'
+                            filename 'golang:1.10.1'
                         }
                     }
                     steps {
-                        echo "TO-DO"
-                        /*dir('vdc-logging') {
-                            git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Logging-Agent.git'
-                        }*/
+                        dir('vdc-logging') {
+                           go get -u 'github.com/golang/dep/cmd/dep'
+                           dep ensure
+                           go test ./...
+                        }
+                    }
+                }
+                stage('Checkout vdc-throughput') {
+                    agent {
+                        dockerfile {
+                            filename 'maven:3-jdk-8'
+                        }
+                    }
+                    steps {
+                        apt-get update
+                        apt-get install -y iptraf-ng
+                        dir('vdc-throughput') {
+                            mvm test
+                        }
                     }
                 }
                 stage('Checkout vdc-request') {
+                    //build the base image somehow?
+                    //build the test enviroment
                     agent {
                         // We MUST build and test inside a container with all dependencies
                         dockerfile {
@@ -60,26 +75,10 @@ pipeline {
                     }
                     steps {
                         echo "TO-DO"
-                        /*dir('vdc-request') {
-                            git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Request-Monitor.git'
-                        }*/
+                        //sh test.sh
                     }
                 }
-                stage('Checkout vdc-throughput') {
-                    agent {
-                        // We MUST build and test inside a container with all dependencies
-                        dockerfile {
-                            // A image from DockerHub can be used instead a Dockerfile
-                            filename 'Dockerfile.vdc-throughput.build'
-                        }
-                    }
-                    steps {
-                        echo "TO-DO"
-                        /*dir('vdc-throughput') {
-                            git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Throughput-Agent.git'
-                        }*/
-                    }
-                }
+                
             }
         }
         // If we reach this stage, the building and testing stages has been finished sucesfully.
