@@ -33,7 +33,10 @@ pipeline {
                 }
             }
         }
-        //stage ('Build - Test') {
+        stage ('Build - Test') {
+            options {
+                skipDefaultCheckout true
+            }
             //parallel {
                 stage('Build - test vdc-logging') {
                     agent {
@@ -46,6 +49,12 @@ pipeline {
                           sh "go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
                         
+                    }
+                }
+                stage('Build - test vdc-logging') {
+                    agent any
+                    steps {
+                        sh "echo 'test'"
                     }
                 }
                 // stage('Build vdc-throughput') {
@@ -93,7 +102,7 @@ pipeline {
                 // }
                 
            //}
-        //}
+        }
 		// At this point the 3 images were created started and stopped, but they exist (docker images)
 		// We can create the final artifact, an image with the best of the three		
         // stage ('Main image generation') {
