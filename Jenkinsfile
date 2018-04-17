@@ -46,7 +46,7 @@ pipeline {
                         
                            sh "mkdir -p /go/src/github.com/DITAS-Project/VDC-Logging-Agent"
                            sh "cp -R /tmp/foo /go/src/github.com/DITAS-Project/VDC-Logging-Agent"
-                           sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && echo '${ls -la}'"
+                           sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && ls -la"
                            sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go get -u 'github.com/golang/dep/cmd/dep' && dep ensure"
                            sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
