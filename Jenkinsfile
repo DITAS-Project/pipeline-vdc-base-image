@@ -55,6 +55,7 @@ pipeline {
                     agent {
                         docker{
                             image 'maven:3-jdk-8'
+                             args '-v vdc-throughput:/tmp -w /tmp'
                         }
                     }
                     steps {
