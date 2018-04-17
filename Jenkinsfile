@@ -39,14 +39,15 @@ pipeline {
                     agent {
                         docker {
                             image 'golang:1.10.1'
-                            args '-v vdc-logging:/go/src/github.com/DITAS-Project/VDC-Logging-Agent -w /go/src/github.com/DITAS-Project/VDC-Logging-Agent'
+                            args '-v vdc-logging:/tmp/foo'
                         }
                     }
                     steps {
                         dir('vdc-logging') {
-                           sh "go get -u 'github.com/golang/dep/cmd/dep'"
-                           sh "dep ensure"
-                           sh "go test ./..."
+                           sh "mkdir -p /go/src/github.com/DITAS-Project/VDC-Logging-Agent"
+                           sh "mv /tmp/foo /go/src/github.com/DITAS-Project/VDC-Logging-Agent"
+                           sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go get -u 'github.com/golang/dep/cmd/dep' && dep ensure"
+                           sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
                         }
                     }
