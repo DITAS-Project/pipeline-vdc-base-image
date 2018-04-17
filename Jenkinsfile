@@ -37,7 +37,9 @@ pipeline {
             parallel {
                 stage('Build - test vdc-logging') {
                     agent {
-                        image 'golang:1.10.1'
+                        docker {
+                            image 'golang:1.10.1'
+                        }
                     }
                     steps {
                         dir('vdc-logging') {
@@ -50,7 +52,9 @@ pipeline {
                 }
                 stage('Build vdc-throughput') {
                     agent {
-                        image 'maven:3-jdk-8'
+                        docker{
+                            image 'maven:3-jdk-8'
+                        }
                     }
                     steps {
                         sh "apt-get update && apt-get install -y iptraf-ng"
