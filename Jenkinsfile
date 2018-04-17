@@ -51,7 +51,7 @@ pipeline {
                         
                     }
                 }
-                stage('Build - test vdc-logging') {
+                stage('Build - test vdc-logging 2') {
                     agent any
                     steps {
                         sh "echo 'test'"
