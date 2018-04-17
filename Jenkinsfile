@@ -37,7 +37,7 @@ pipeline {
             options {
                 skipDefaultCheckout true
             }
-            //parallel {
+            parallel {
                 stage('Build - test vdc-logging') {
                     agent {
                         dockerfile {
@@ -101,7 +101,7 @@ pipeline {
                 //     }
                 // }
                 
-           //}
+           }
         }
 		// At this point the 3 images were created started and stopped, but they exist (docker images)
 		// We can create the final artifact, an image with the best of the three		
