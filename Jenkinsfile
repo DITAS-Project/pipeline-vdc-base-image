@@ -39,13 +39,13 @@ pipeline {
                     agent {
                         docker {
                             image 'golang:1.10.1'
-                            args '-v vdc-logging:/tmp/foo'
+                            args '-v vdc-logging:/tmp/'
                         }
                     }
                     steps {
                         
                            sh "mkdir -p /go/src/github.com/DITAS-Project/VDC-Logging-Agent"
-                           sh "cp -R /tmp/foo /go/src/github.com/DITAS-Project/VDC-Logging-Agent"
+                           sh "cp -R /tmp/ /go/src/github.com/DITAS-Project/VDC-Logging-Agent"
                            sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && ls -la"
                            sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go get -u 'github.com/golang/dep/cmd/dep' && dep ensure"
                            sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go test ./..."
