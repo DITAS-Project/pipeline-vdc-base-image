@@ -39,6 +39,7 @@ pipeline {
                     agent {
                         docker {
                             image 'golang:1.10.1'
+                            args '-v vdc-logging:/go/src/github.com/DITAS-Project/VDC-Logging-Agent -w /go/src/github.com/DITAS-Project/VDC-Logging-Agent'
                         }
                     }
                     steps {
