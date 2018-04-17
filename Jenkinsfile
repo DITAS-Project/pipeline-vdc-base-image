@@ -44,38 +44,56 @@ pipeline {
                            sh "go get -u 'github.com/golang/dep/cmd/dep'"
                            sh "dep ensure"
                            sh "go test ./..."
+						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
                         }
                     }
                 }
-                stage('Checkout vdc-throughput') {
+                stage('Build vdc-throughput') {
                     agent {
                         image 'maven:3-jdk-8'
                     }
                     steps {
                         sh "apt-get update && apt-get install -y iptraf-ng"
                         dir('vdc-throughput') {
-                            sh "mvm test"
+                            sh "mvm test" // You don't need a "mvn build" first?
+						   // TO-DO add a post directive to archive the tests (only works if they are JUnit style)
                         }
                     }
                 }
-                stage('Checkout vdc-request') {
-                    //build the base image somehow?
-                    //build the test enviroment
-                    agent {
+                stage('Test vdc-request') {
+					// We don't need this to be an agent. For this component we just need the image to be generated as there are not Unit Tests
+					agent {
                         dockerfile {
-                            filename 'Dockerfile.vdc-request.build'
-                        }
+			                filename 'vdc-request/Dockerfile' // Dockerfile only at this moment but should be Dockerfile.build
+			            }	
                     }
                     steps {
-                        sh test.sh
+                        echo "VDC-Request-Monitor Testing"
+                        sh "export VDC_PORT=80"
+                        sh "export VDC_ADDRESS=google.de"
+                        sh "/run.sh &" //start the server
+                        sh "sleep 25" //wait 
+                        sh "curl -k 'http://127.0.0.1:8000'" //this is the quick test
+                    }
+                }
+                stage('Build vdc-request') {
+					// We don't need this to be an agent. For this component we just need the image to be generated as there are not Unit Tests
+					agent any
+                    steps {
+                        dir('vdc-request') {
+                            echo "Generation the VDC Request image"
+                            sh "docker build -t \"ditas/vdc-request-monitor\" -f ."
+                            sh "No testing for the vdc-request component"
+                        }
+						
                     }
                 }
                 
             }
         }
-        // If we reach this stage, the building and testing stages has been finished sucesfully.
-        // Now we trust the code so we can build the final docker image
-        stage ('Image generation') {
+		// At this point the 3 images were created started and stopped, but they exist (docker images)
+		// We can create the final artifact, an image with the best of the three		
+        stage ('Main image generation') {
             // The final image must be built at the node itsefl, not inside a container
             agent any
             options {
@@ -105,18 +123,36 @@ pipeline {
                echo "Done "
            }
         }
-        // Deploy the image to the staging seerver
-        stage('Image deploy') {
-            agent any
-            options {
-                // Don't need to checkout Git again
-                skipDefaultCheckout true
-            }
-            steps {
-                // Deploy to Staging environment calling the deployment script
-                // !!!! Edit this file to set the correct iamge tag
-                sh './jenkins/deploy-staging.sh'
-            }
-        }
+        // // Deploy the image to the staging seerver
+        // stage('Image deploy') {
+        //     agent any
+        //     options {
+        //         // Don't need to checkout Git again
+        //         skipDefaultCheckout true
+        //     }
+        //     steps {
+        //         // Deploy to Staging environment calling the deployment script
+        //         //  TODO !!!! Edit this file to set the correct iamge tag and port mapping
+        //         sh './jenkins/deploy-staging.sh'
+        //     }
+        // }
+        // // Simple test(s) to ensure the base image and all the components are running after deployment
+        // stage('Component level testing') {
+        //     agent any
+        //     options {
+        //         // Don't need to checkout Git again
+        //         skipDefaultCheckout true
+        //     }
+        //     steps {
+		// 		// TODO any vdc-logging test here? A call to the an API method?
+				
+				
+		// 		// TODO any vdc-logging test here? A call to the an API method?
+				
+		// 		// vdc-request-monitor test - 31.171.247.162 = Staging environment
+		// 		// TODO 8000? It is not mapped in the deploy script, in the docker run command
+        //         sh "exec curl -k 'http://31.171.247.162:8000'" // TODO AITOR - deploy an email server to send email on failures
+        //     }
+        // }
     }
 }
