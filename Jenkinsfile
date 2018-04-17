@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-        stage ('Build - Test') {
+        //stage ('Build - Test') {
             //parallel {
                 stage('Build - test vdc-logging') {
                     agent {
@@ -98,7 +98,7 @@ pipeline {
                 // }
                 
            //}
-        }
+        //}
 		// At this point the 3 images were created started and stopped, but they exist (docker images)
 		// We can create the final artifact, an image with the best of the three		
         // stage ('Main image generation') {
