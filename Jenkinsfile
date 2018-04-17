@@ -90,7 +90,7 @@ pipeline {
                     steps {
                         dir('vdc-request') {
                             echo "Generation the VDC Request image"
-                            sh "docker build -t \"ditas/vdc-request-monitor\" -f ."
+                            sh "docker build -t \"ditas/vdc-request-monitor\" ."
                             sh "No testing for the vdc-request component"
                         }
 						
