@@ -63,14 +63,7 @@ pipeline {
                         sh "cd ./vdc-throughput/ && mvn test"
                      }
                  }
-                
-           }
-        }
-        stage ('Build - VDC-Request-Monitor Testing') {
-            options {
-                skipDefaultCheckout true
-            }
-            stage('Test vdc-request-monitor') {
+                stage('Test vdc-request-monitor') {
 					// We don't need this to be an agent. For this component we just need the image to be generated as there are not Unit Tests
 					agent {
                         dockerfile {
@@ -88,18 +81,21 @@ pipeline {
                         sh "curl -k 'http://127.0.0.1:8000'" //this is the quick test
                     }
                 }
-                stage('Build vdc-request') {
-					// We don't need this to be an agent. For this component we just need the image to be generated as there are not Unit Tests
-					agent any
-                    steps {
-                        dir('vdc-request') {
-                            echo "Generation the VDC Request image"
-                            sh "docker build -t \"ditas/vdc-request-monitor\" ."
-                            //TODO: push this image?
-                        }
-						
-                    }
+           }
+        }
+        stage ('Build - VDC-Request-Monitor Testing') {
+            options {
+                skipDefaultCheckout true
+            }
+            agent any
+            steps {
+                dir('vdc-request') {
+                    echo "Generation the VDC Request image"
+                    sh "docker build -t \"ditas/vdc-request-monitor\" ."
+                    //TODO: push this image?
                 }
+                
+            }
         }
 		// At this point the 3 images were created started and stopped, but they exist (docker images)
 		// We can create the final artifact, an image with the best of the three		
