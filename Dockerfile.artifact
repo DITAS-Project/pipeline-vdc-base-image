@@ -9,7 +9,7 @@ RUN apk update && apk add git && \
 FROM maven:3-jdk-8 AS vdcThroughput
 RUN git clone https://github.com/DITAS-Project/VDC-Throughput-Agent.git && \
     cd VDC-Throughput-Agent && \
-    mvn package 
+    mvn package -DskipTests
 
 FROM ditas/vdc-request-monitor:latest
 
