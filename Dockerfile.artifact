@@ -28,7 +28,7 @@ ENV elasticURI 127.0.0.1
 ENV zipkinURI 127.0.0.1:9411
 ENV vdcURI 127.0.0.1:8080
 ENV VDC_ADDRESS 127.0.0.1
-EBV VDC_PORT 8080
+ENV VDC_PORT 8080
 
 ADD entrypoint.sh /entrypoint.sh
 
