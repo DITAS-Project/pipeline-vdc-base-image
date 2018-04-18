@@ -50,19 +50,20 @@ pipeline {
                     }
                     steps {
                           sh "DDEBUGG - Building vdc-logging (agent docker)"
-			  sh "pwd"
-                          sh "go test ./..."
+			  //sh "pwd"
+                          //sh "go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
                         
                     }
                 }
+		    /*
                 stage('Build - test vdc-logging 2') {
                     agent any
                     steps {
                         //sh "echo 'test'"
 			echo "DDEBUGG - Building vdc-logging 2 (agent any)" 
                     }
-                }
+                } */
                 // stage('Build vdc-throughput') {
                 //     agent {
                 //         docker{
