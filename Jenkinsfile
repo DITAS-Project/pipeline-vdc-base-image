@@ -70,6 +70,7 @@ pipeline {
                             dir 'vdc-request'
                             filename 'Dockerfile.testing'
                             reuseNode true 
+                            args '--user 0'
 			            }	
                     }
                     steps {
