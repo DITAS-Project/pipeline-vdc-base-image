@@ -86,9 +86,6 @@ pipeline {
            }
         }
         stage ('Build - VDC-Request-Monitor Testing') {
-            options {
-                skipDefaultCheckout true
-            }
             agent any
             steps {
                 dir('vdc-request') {
@@ -104,9 +101,6 @@ pipeline {
         stage ('Main image generation') {
             // The final image must be built at the node itsefl, not inside a container
             agent any
-            options {
-                skipDefaultCheckout true
-            }
             steps {
                // The Dockerfile.artifact copies the code into the image and run the jar generation.
                echo 'Creating the image...'
