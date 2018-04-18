@@ -61,7 +61,7 @@ pipeline {
                      }
                      steps {
                         dir('vdc-throughput') { 
-                            sh "mvm test"
+                            sh "mvn test"
                         }
                      }
                  }
