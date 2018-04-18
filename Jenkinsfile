@@ -53,7 +53,7 @@ pipeline {
                 }
                  stage('Build vdc-throughput') {
                      agent {
-                         docker{
+                         dockerfile{
                             dir 'vdc-throughput'
                             filename 'Dockerfile.testing'
                             reuseNode true 
