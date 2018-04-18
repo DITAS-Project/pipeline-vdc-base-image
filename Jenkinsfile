@@ -47,13 +47,13 @@ pipeline {
                             dir 'vdc-logging'
 		                    filename 'Dockerfile.testing' // Dockerfile only at this moment but should be Dockerfile.build
 		                    reuseNode true           
-			}
+			            }
                     }
                     steps {
-                        sh "pwd"
+                        sh "ls -la /go"
                           // sh "echo 'DDEBUGG - Building vdc-logging (agent docker)"
 			  //sh "pwd"
-                        sh "go test ./..."
+                        sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
                         
                     }
