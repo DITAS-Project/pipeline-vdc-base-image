@@ -60,9 +60,7 @@ pipeline {
                          }
                      }
                      steps {
-                        dir('vdc-throughput') { 
-                            sh "mvn test"
-                        }
+                        sh "cd ./vdc-throughput/ && mvn test"
                      }
                  }
                 // stage('Test vdc-request') {
