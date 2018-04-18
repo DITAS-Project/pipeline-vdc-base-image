@@ -12,7 +12,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/DITAS-Project/VDC-Throughput-Agent.git && \
     cd VDC-Throughput-Agent && \
-    mvn -DskipTests -Dmaven.test.skip=true package 
+    mvn package -DskipTests
 
 FROM ditas/vdc-request-monitor:latest
 
