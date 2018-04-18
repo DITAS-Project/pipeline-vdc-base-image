@@ -50,6 +50,7 @@ pipeline {
 			             }
                     }
                     steps {
+			   echo 'hola'
                           // sh "echo 'DDEBUGG - Building vdc-logging (agent docker)"
 			  //sh "pwd"
                           //sh "go test ./..."
