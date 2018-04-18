@@ -11,7 +11,6 @@ pipeline {
                     options { skipDefaultCheckout true }
                     steps {
                         dir('vdc-logging') {
-			    echo 'DDEBUGG - checking out vdc-logging'
                             git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Logging-Agent.git'
                         }
                     }
@@ -20,7 +19,6 @@ pipeline {
                     options { skipDefaultCheckout true }
                     steps {
                         dir('vdc-request') {
-			    echo 'DDEBUGG - checking out vdc-request'
                             git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Request-Monitor.git'
                         }
                     }
@@ -29,7 +27,6 @@ pipeline {
                     options { skipDefaultCheckout true }
                     steps {
                         dir('vdc-throughput') {
-			    echo 'DDEBUGG - checking out vdc-throughput'
                             git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Throughput-Agent.git'
                         }
                     }
@@ -50,37 +47,23 @@ pipeline {
 			            }
                     }
                     steps {
-                        sh "ls -la /go"
-                          // sh "echo 'DDEBUGG - Building vdc-logging (agent docker)"
-			  //sh "pwd"
                         sh "cd /go/src/github.com/DITAS-Project/VDC-Logging-Agent && go test ./..."
-						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
                         
                     }
                 }
-		    /*
-                stage('Build - test vdc-logging 2') {
-                    agent any
-                    steps {
-                        //sh "echo 'test'"
-			echo "DDEBUGG - Building vdc-logging 2 (agent any)" 
-                    }
-                } */
-                // stage('Build vdc-throughput') {
-                //     agent {
-                //         docker{
-                //             image 'maven:3-jdk-8'
-                //              args '-v vdc-throughput:/tmp -w /tmp'
-                //         }
-                //     }
-                //     steps {
-                //         sh "apt-get update && apt-get install -y iptraf-ng"
-                //         dir('vdc-throughput') {
-                //             sh "mvm test" // You don't need a "mvn build" first?
-				// 		   // TO-DO add a post directive to archive the tests (only works if they are JUnit style)
-                //         }
-                //     }
-                // }
+                 stage('Build vdc-throughput') {
+                     agent {
+                         docker{
+                            image 'maven:3-jdk-8'
+                         }
+                     }
+                     steps {
+                         sh "su -c 'apt-get update' && su -c 'apt-get install -y iptraf-ng'"
+                         dir('vdc-throughput') {
+                            sh "mvm test"
+                         }
+                     }
+                 }
                 // stage('Test vdc-request') {
 				// 	// We don't need this to be an agent. For this component we just need the image to be generated as there are not Unit Tests
 				// 	agent {
