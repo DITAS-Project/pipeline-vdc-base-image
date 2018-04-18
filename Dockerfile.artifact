@@ -7,9 +7,12 @@ RUN apk update && apk add git && \
     CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o vdc-agent
 
 FROM maven:3-jdk-8 AS vdcThroughput
+RUN apt-get update \
+    && apt-get install -y iptraf-ng \
+    && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/DITAS-Project/VDC-Throughput-Agent.git && \
     cd VDC-Throughput-Agent && \
-    mvn package -DskipTests -Dmaven.test.skip=true
+    mvn -DskipTests -Dmaven.test.skip=true package 
 
 FROM ditas/vdc-request-monitor:latest
 
@@ -20,6 +23,8 @@ COPY --from=vdcThroughput /VDC-Throughput-Agent/target/VDCMonitor-1.0-SNAPSHOT.j
 RUN mkdir /opt/monitoring/mnt && touch /opt/monitoring/mnt/whitelist
 # add nassesary command line tools
 RUN apt-get update \
+    && apt-get install -y iptraf-ng \
+    && rm -rf /var/lib/apt/lists/*RUN apt-get update \
     && apt-get install -y iptraf-ng \
     && rm -rf /var/lib/apt/lists/*
 
