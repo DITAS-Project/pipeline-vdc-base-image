@@ -54,15 +54,15 @@ pipeline {
                  stage('Build vdc-throughput') {
                      agent {
                          docker{
-                            image 'maven:3-jdk-8'
-                            args '-u 0'
+                            dir 'vdc-throughput'
+                            filename 'Dockerfile.testing'
+                            reuseNode true 
                          }
                      }
                      steps {
-                         sh "apt-get update && apt-get install -y iptraf-ng"
-                         dir('vdc-throughput') {
+                        dir('vdc-throughput') { 
                             sh "mvm test"
-                         }
+                        }
                      }
                  }
                 // stage('Test vdc-request') {
