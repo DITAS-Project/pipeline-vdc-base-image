@@ -45,7 +45,8 @@ pipeline {
                     agent {
                         dockerfile {
 			                 filename 'vdc-logging/Dockerfile.testing' // Dockerfile only at this moment but should be Dockerfile.build
-			             }
+					reuseNode true           
+			}
                     }
                     steps {
                           sh "Building vdc-logging (agent docker)"
