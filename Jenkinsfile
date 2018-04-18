@@ -50,7 +50,7 @@ pipeline {
 			}
                     }
                     steps {
-                        sh "ls -la"
+                        sh "pwd"
                           // sh "echo 'DDEBUGG - Building vdc-logging (agent docker)"
 			  //sh "pwd"
                         sh "go test ./..."
