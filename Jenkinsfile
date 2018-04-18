@@ -44,15 +44,14 @@ pipeline {
                 stage('Build - test vdc-logging') {
                     agent {
                         docker {
-			                 //filename 'vdc-logging/Dockerfile.testing' // Dockerfile only at this moment but should be Dockerfile.build
-				image 'debian:jessie'
-				reuseNode true           
-			}
+			                 filename 'vdc-logging/Dockerfile.testing' // Dockerfile only at this moment but should be Dockerfile.build
+				             reuseNode true           
+			             }
                     }
                     steps {
-                          sh "DDEBUGG - Building vdc-logging (agent docker)"
+                          sh "echo 'DDEBUGG - Building vdc-logging (agent docker)''"
 			  //sh "pwd"
-                          //sh "go test ./..."
+                          sh "go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
                         
                     }
