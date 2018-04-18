@@ -43,7 +43,7 @@ pipeline {
             parallel {
                 stage('Build - test vdc-logging') {
                     agent {
-                        docker {
+                        dockerfile {
 			                 filename 'vdc-logging/Dockerfile.testing' // Dockerfile only at this moment but should be Dockerfile.build
 				             reuseNode true           
 			             }
