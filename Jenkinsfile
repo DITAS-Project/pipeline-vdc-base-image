@@ -57,7 +57,7 @@ pipeline {
 			             }
                     }
                     steps {
-                          sh "echo 'DDEBUGG - Building vdc-logging (agent docker)''"
+                          sh "echo 'DDEBUGG - Building vdc-logging (agent docker)"
 			  //sh "pwd"
                           //sh "go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
