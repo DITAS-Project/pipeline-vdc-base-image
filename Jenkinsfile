@@ -55,10 +55,11 @@ pipeline {
                      agent {
                          docker{
                             image 'maven:3-jdk-8'
+                            args 'u 0'
                          }
                      }
                      steps {
-                         sh "su -c 'apt-get update' && su -c 'apt-get install -y iptraf-ng'"
+                         sh "apt-get update && apt-get install -y iptraf-ng"
                          dir('vdc-throughput') {
                             sh "mvm test"
                          }
