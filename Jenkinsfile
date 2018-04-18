@@ -46,7 +46,7 @@ pipeline {
                         docker {
 			                 //filename 'vdc-logging/Dockerfile.testing' // Dockerfile only at this moment but should be Dockerfile.build
 				image 'debian:jessie'
-				reuseNode true           
+				//reuseNode true           
 			}
                     }
                     steps {
