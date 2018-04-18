@@ -11,7 +11,7 @@ pipeline {
                     options { skipDefaultCheckout true }
                     steps {
                         dir('vdc-logging') {
-			    echo 'checking out vdc-logging'
+			    echo 'DDEBUGG - checking out vdc-logging'
                             git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Logging-Agent.git'
                         }
                     }
@@ -20,7 +20,7 @@ pipeline {
                     options { skipDefaultCheckout true }
                     steps {
                         dir('vdc-request') {
-			    echo 'checking out vdc-request'
+			    echo 'DDEBUGG - checking out vdc-request'
                             git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Request-Monitor.git'
                         }
                     }
@@ -29,7 +29,7 @@ pipeline {
                     options { skipDefaultCheckout true }
                     steps {
                         dir('vdc-throughput') {
-			    echo 'checking out vdc-throughput'
+			    echo 'DDEBUGG - checking out vdc-throughput'
                             git changelog: false, credentialsId: 'Aitor-IDEKO-GitHub', poll: false, url: 'https://github.com/DITAS-Project/VDC-Throughput-Agent.git'
                         }
                     }
@@ -49,7 +49,7 @@ pipeline {
 			}
                     }
                     steps {
-                          sh "Building vdc-logging (agent docker)"
+                          sh "DDEBUGG - Building vdc-logging (agent docker)"
 			  sh "pwd"
                           sh "go test ./..."
 						   // TO-DO in jenkins add a post directive to archive the tests (only works if they are JUnit style)
@@ -60,7 +60,7 @@ pipeline {
                     agent any
                     steps {
                         //sh "echo 'test'"
-			echo "Building vdc-logging 2 (agent any)" 
+			echo "DDEBUGG - Building vdc-logging 2 (agent any)" 
                     }
                 }
                 // stage('Build vdc-throughput') {
