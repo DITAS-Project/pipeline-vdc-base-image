@@ -86,7 +86,7 @@ pipeline {
            }
         }
         stage ('Build - VDC-Request-Monitor Testing') {
-            agent any
+            agent none
 		steps {
                 dir('vdc-request') {
                     echo "Generation the VDC Request image"
