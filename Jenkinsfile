@@ -1,6 +1,5 @@
 pipeline {
-    //agent any
-	agent { label "machine" }
+    agent any
     stages {
         stage ('Checkout') {
             options {
@@ -87,8 +86,7 @@ pipeline {
            }
         }
         stage ('Build - VDC-Request-Monitor Testing') {
-            //agent any
-            	agent { label "machine" }
+            agent any
 		steps {
                 dir('vdc-request') {
                     echo "Generation the VDC Request image"
