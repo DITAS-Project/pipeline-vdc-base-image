@@ -100,7 +100,7 @@ pipeline {
 		// We can create the final artifact, an image with the best of the three		
         stage ('Main image generation') {
             // The final image must be built at the node itsefl, not inside a container
-            agent any
+            agent none
             steps {
                // The Dockerfile.artifact copies the code into the image and run the jar generation.
                echo 'Creating the image...'
