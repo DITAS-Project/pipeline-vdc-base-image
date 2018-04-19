@@ -86,7 +86,10 @@ pipeline {
            }
         }
         stage ('Build - VDC-Request-Monitor Testing') {
-            agent any
+            //agent any
+	     agent {
+		reuseLabelAgent "Checkout" 
+	     }
             steps {
                 dir('vdc-request') {
                     echo "Generation the VDC Request image"
