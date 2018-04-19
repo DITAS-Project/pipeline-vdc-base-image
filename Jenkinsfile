@@ -1,5 +1,6 @@
 pipeline {
-    agent any
+    //agent any
+	agent { label "machine" }
     stages {
         stage ('Checkout') {
             options {
@@ -86,8 +87,9 @@ pipeline {
            }
         }
         stage ('Build - VDC-Request-Monitor Testing') {
-            agent any
-            steps {
+            //agent any
+            	agent { label "machine" }
+		steps {
                 dir('vdc-request') {
                     echo "Generation the VDC Request image"
                     sh "docker build -t \"ditas/vdc-request-monitor\" ."
