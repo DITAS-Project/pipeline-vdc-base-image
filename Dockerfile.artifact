@@ -28,7 +28,7 @@ RUN apt-get update \
     && apt-get install -y iptraf-ng \
     && rm -rf /var/lib/apt/lists/*
 
-#TODO how do we do service discovery?
+#TODO: how do we do service discovery?
 ENV elasticURI 127.0.0.1
 ENV zipkinURI 127.0.0.1:9411
 ENV vdcURI 127.0.0.1:8080
