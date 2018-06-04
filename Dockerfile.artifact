@@ -16,17 +16,48 @@ RUN git clone https://github.com/DITAS-Project/VDC-Throughput-Agent.git && \
 
 FROM ditas/vdc-request-monitor:latest
 
+# Default to UTF-8 file.encoding
+ENV LANG C.UTF-8
+
+# add a simple script that can auto-detect the appropriate JAVA_HOME value
+# based on whether the JDK or only the JRE is installed
+RUN { \
+		echo '#!/bin/sh'; \
+		echo 'set -e'; \
+		echo; \
+		echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
+	} > /usr/local/bin/docker-java-home \
+	&& chmod +x /usr/local/bin/docker-java-home
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+
+ENV JAVA_VERSION 8u111
+ENV JAVA_ALPINE_VERSION 8.111.14-r0
+
+RUN set -x \
+	&& apk add --no-cache \
+		openjdk8="$JAVA_ALPINE_VERSION" \
+	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
+
+#TODO add iptraf-ng
+
 # Add compiled vdc-monitoring components
 COPY --from=vdcAgent /go/src/github.com/DITAS-Project/VDC-Logging-Agent/vdc-agent /opt/monitoring/vdc-agent
 COPY --from=vdcThroughput /VDC-Throughput-Agent/target/VDCMonitor-1.0-SNAPSHOT.jar /opt/monitoring/VDCMonitor.jar
 
-RUN mkdir /opt/monitoring/mnt && touch /opt/monitoring/mnt/whitelist
+RUN mkdir -p /opt/monitoring/mnt && touch /opt/monitoring/mnt/whitelist
 # add nassesary command line tools
-RUN apt-get update \
-    && apt-get install -y iptraf-ng \
-    && rm -rf /var/lib/apt/lists/*RUN apt-get update \
-    && apt-get install -y iptraf-ng \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache iptraf-ng  \
+    && rm -rf /var/cache/apk/*
+
+ENV BUILD_DEPS="gettext"  \
+    RUNTIME_DEPS="libintl"
+
+RUN set -x && \
+    apk add --update $RUNTIME_DEPS && \
+    apk add --virtual build_deps $BUILD_DEPS &&  \
+    cp /usr/bin/envsubst /usr/local/bin/envsubst && \
+    apk del build_deps
 
 #TODO: how do we do service discovery?
 ENV elasticURI 127.0.0.1
@@ -34,7 +65,7 @@ ENV zipkinURI 127.0.0.1:9411
 ENV vdcURI 127.0.0.1:8080
 ENV VDC_ADDRESS 127.0.0.1
 ENV VDC_PORT 8080
-
+ADD monitor.json .config/monitor.json
 ADD entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]

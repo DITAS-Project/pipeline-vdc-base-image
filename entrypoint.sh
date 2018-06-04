@@ -7,7 +7,8 @@ exec ./vdc-agent -zipkin "http://${zipkinURI}/api/v1/spans" -vdc "http://${vdcUR
 exec java -jar VDCMonitor.jar &
 cd /
 
+envsubst '${vdcURI},${elasticURI}' < .config/monitor.json > .config/monitor.json 
 #start ngnix
-exec sh /run.sh &
+exec ./request-monitor  &
 cd ${WORKINGDIR}
 exec "$@"
