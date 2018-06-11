@@ -1,0 +1,4 @@
+{
+   "ElasticSearchURL":"http://${elasticURI}:9200",
+   "windowTime": 10
+}

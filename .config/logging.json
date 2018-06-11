@@ -1,0 +1,7 @@
+{
+    "Port":8484,
+    "ElasticSearchURL":"http://${elasticURI}:9200",
+    "VDCName":"tubvdc",
+    "Endpoint":"http://${vdcURI}",
+    "verbose":false
+}

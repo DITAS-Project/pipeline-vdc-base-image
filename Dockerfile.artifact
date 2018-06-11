@@ -6,66 +6,45 @@ RUN apk update && apk add git && \
     dep ensure && \
     CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o vdc-agent
 
-FROM maven:3-jdk-8 AS vdcThroughput
-RUN apt-get update \
-    && apt-get install -y iptraf-ng \
-    && rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/DITAS-Project/VDC-Throughput-Agent.git && \
-    cd VDC-Throughput-Agent && \
-    mvn package -DskipTests
+FROM golang:1.10.0-alpine as vdcThroughput
+RUN apk update && apk add git && \
+    go get -u github.com/golang/dep/cmd/dep && \
+    go get github.com/DITAS-Project/VDC-Throughput-Agent && \
+    cd src/github.com/DITAS-Project/VDC-Throughput-Agent && \
+    dep ensure && \
+    CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o vdc-traffic
+
 
 FROM ditas/vdc-request-monitor:latest
 
-# Default to UTF-8 file.encoding
-ENV LANG C.UTF-8
-
-# add a simple script that can auto-detect the appropriate JAVA_HOME value
-# based on whether the JDK or only the JRE is installed
-RUN { \
-		echo '#!/bin/sh'; \
-		echo 'set -e'; \
-		echo; \
-		echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
-	} > /usr/local/bin/docker-java-home \
-	&& chmod +x /usr/local/bin/docker-java-home
-ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
-ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
-
-ENV JAVA_VERSION 8u111
-ENV JAVA_ALPINE_VERSION 8.111.14-r0
-
-RUN set -x \
-	&& apk add --no-cache \
-		openjdk8="$JAVA_ALPINE_VERSION" \
-	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
-
-#TODO add iptraf-ng
-
 # Add compiled vdc-monitoring components
 COPY --from=vdcAgent /go/src/github.com/DITAS-Project/VDC-Logging-Agent/vdc-agent /opt/monitoring/vdc-agent
-COPY --from=vdcThroughput /VDC-Throughput-Agent/target/VDCMonitor-1.0-SNAPSHOT.jar /opt/monitoring/VDCMonitor.jar
+COPY --from=vdcThroughput /go/src/github.com/DITAS-Project/VDC-Throughput-Agent/vdc-traffic /opt/monitoring/vdc-traffic
 
-RUN mkdir -p /opt/monitoring/mnt && touch /opt/monitoring/mnt/whitelist
+ENV BUILD_DEPS="gettext alpine-sdk git autoconf automake libtool"  \
+    RUNTIME_DEPS="libintl libpcap-dev ncurses-dev "
+
 # add nassesary command line tools
-RUN apk add --no-cache iptraf-ng  \
+RUN  apk add --update $RUNTIME_DEPS && \
+    apk add --virtual build_deps $BUILD_DEPS   \
+    && cd /tmp && git clone https://github.com/dleonard0/pktstat.git \
+        && cd pktstat \
+        && libtoolize --force &&  aclocal && autoheader && automake --force-missing --add-missing && autoconf && ./configure \
+        && make install && cd ../ rm -rf pktstat \
+        && cp /usr/bin/envsubst /usr/local/bin/envsubst  \
+    && apk del build_deps \
     && rm -rf /var/cache/apk/*
 
-ENV BUILD_DEPS="gettext"  \
-    RUNTIME_DEPS="libintl"
+ADD .config /.config
+ADD entrypoint.sh /entrypoint.sh
 
-RUN set -x && \
-    apk add --update $RUNTIME_DEPS && \
-    apk add --virtual build_deps $BUILD_DEPS &&  \
-    cp /usr/bin/envsubst /usr/local/bin/envsubst && \
-    apk del build_deps
+EXPOSE 80
+EXPOSE 443
+EXPOSE 8484
 
-#TODO: how do we do service discovery?
+#TODO: remove me! 
 ENV elasticURI 127.0.0.1
 ENV zipkinURI 127.0.0.1:9411
 ENV vdcURI 127.0.0.1:8080
-ENV VDC_ADDRESS 127.0.0.1
-ENV VDC_PORT 8080
-ADD monitor.json .config/monitor.json
-ADD entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]

@@ -1,14 +1,20 @@
 #!/bin/sh
 set -e
+sleep 60
+
+if [[ -z "${ENVCONF}" ]]; then
+    envsubst '${vdcURI},${elasticURI},${zipkinURI}' < /.config/monitor.json > /.config/monitor.json 
+    envsubst '${vdcURI},${elasticURI},${zipkinURI}' < /.config/traffic.json > /.config/traffic.json 
+    envsubst '${vdcURI},${elasticURI},${zipkinURI}' < /.config/logging.json > /.config/logging.json 
+fi
 
 echo "Starting the monitoring services"
 cd /opt/monitoring
-exec ./vdc-agent -zipkin "http://${zipkinURI}/api/v1/spans" -vdc "http://${vdcURI}" -elastic "http://${elasticURI}" &
-exec java -jar VDCMonitor.jar &
+exec ./vdc-agent &
+exec ./vdc-traffic &
 cd /
 
-envsubst '${vdcURI},${elasticURI}' < .config/monitor.json > .config/monitor.json 
-#start ngnix
+#start proxy
 exec ./request-monitor  &
 cd ${WORKINGDIR}
 exec "$@"
