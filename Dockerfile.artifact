@@ -41,10 +41,4 @@ ADD entrypoint.sh /entrypoint.sh
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8484
-
-#TODO: remove me! 
-ENV elasticURI 127.0.0.1
-ENV zipkinURI 127.0.0.1:9411
-ENV vdcURI 127.0.0.1:8080
-
 ENTRYPOINT [ "/entrypoint.sh" ]
