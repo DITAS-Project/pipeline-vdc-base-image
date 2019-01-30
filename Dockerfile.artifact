@@ -1,11 +1,3 @@
-FROM golang:1.10.0-alpine as vdcAgent
-RUN apk update && apk add git && \
-    go get -u github.com/golang/dep/cmd/dep && \
-    go get -d github.com/DITAS-Project/VDC-Logging-Agent && \
-    cd src/github.com/DITAS-Project/VDC-Logging-Agent && \
-    dep ensure && \
-    CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-w -s -X main.Build=$(git rev-parse --short HEAD)" -o vdc-agent
-
 FROM golang:1.10.0-alpine as vdcThroughput
 RUN apk update && apk add git && \
     go get -u github.com/golang/dep/cmd/dep && \
@@ -15,10 +7,7 @@ RUN apk update && apk add git && \
     CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-w -s -X main.Build=$(git rev-parse --short HEAD)" -o vdc-traffic
 
 
-FROM ditas/vdc-request-monitor:latest
-
-# Add compiled vdc-monitoring components
-COPY --from=vdcAgent /go/src/github.com/DITAS-Project/VDC-Logging-Agent/vdc-agent /opt/monitoring/vdc-agent
+FROM alpine:3.4
 COPY --from=vdcThroughput /go/src/github.com/DITAS-Project/VDC-Throughput-Agent/vdc-traffic /opt/monitoring/vdc-traffic
 
 ENV BUILD_DEPS="gettext alpine-sdk git autoconf automake libtool"  \
@@ -35,10 +24,6 @@ RUN  apk add --update $RUNTIME_DEPS && \
     && apk del build_deps \
     && rm -rf /var/cache/apk/*
 
-#ADD .config /.config
 ADD entrypoint.sh /entrypoint.sh
 
-EXPOSE 80
-EXPOSE 443
-EXPOSE 8484
 ENTRYPOINT [ "/entrypoint.sh" ]
